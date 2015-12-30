@@ -83,8 +83,16 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
     public function canDo($cap)
     {
         global $ACT;
-        if ($ACT == "admin" && $_REQUEST['page']=="usermanager" && !empty($this->usermanagerPlugin)) {
+        // It is important to know that auth_setup call canDo('external'). In such case the
+        // $this->currentPlugin must be used. If it is not used and user is authenticated
+        // via trustExternal() user is logged off!
+        $callee = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        if ($ACT == "admin"
+            && $callee[1]['function'] != 'auth_setup'
+            && (empty($_REQUEST['page']) || $_REQUEST['page'] == "usermanager")
+            && !empty($this->usermanagerPlugin)) {
             return $this->usermanagerPlugin->canDo($cap);
+        // If this part is used, auth plain users does not have roles
         } else if (!empty($this->currentPlugin)) {
             return $this->currentPlugin->canDo($cap);
         }
