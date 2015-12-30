@@ -117,6 +117,7 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
             if ($plugin->canDo('external')) {
                 $result = $plugin->trustExternal($user, $pass, $sticky);
                 if ($result === true) {
+                    $this->currentPlugin = $plugin;
                     $this->setCurrentPluginName($plugin);
                     return true;
                 }
@@ -133,6 +134,7 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
         foreach ($this->plugins as $plugin) {
             $result = $plugin->checkPass($user, $pass);
             if ($result === true) {
+                $this->currentPlugin = $plugin;
                 $this->setCurrentPluginName($plugin);
                 return true;
             }
