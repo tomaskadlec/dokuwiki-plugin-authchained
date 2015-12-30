@@ -1,0 +1,8 @@
+/.settings
+/.buildpath
+/.project
+*~
+.DS_Store
+.externalToolBuilders
+.idea
+*.sw*

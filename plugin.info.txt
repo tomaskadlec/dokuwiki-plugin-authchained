@@ -1,0 +1,7 @@
+base   authchained
+author Tomas Kadlec
+email  tomas@tomaskadlec.net
+date   2015-12-30
+name   chained auth plugin
+desc   Delegates authentication to multiple different authentication plugins
+url    https://github.com/tomaskadlec/dokuwiki-plugin-authchained
