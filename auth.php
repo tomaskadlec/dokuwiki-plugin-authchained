@@ -79,6 +79,18 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
             $this->success = false;
     }
 
+    /** @inheritdoc */
+    public function canDo($cap)
+    {
+        global $ACT;
+        if ($ACT == "admin" && $_REQUEST['page']=="usermanager" && !empty($this->usermanagerPlugin)) {
+            return $this->usermanagerPlugin->canDo($cap);
+        } else if (!empty($this->currentPlugin)) {
+            return $this->currentPlugin->canDo($cap);
+        }
+        return parent::canDo($cap);
+    }
+
     /**
      * @inheritdoc
      */
