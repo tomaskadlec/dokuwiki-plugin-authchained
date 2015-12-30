@@ -32,7 +32,7 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
      * @var
      */
     protected $usermanagerPlugin;
-    
+
     /**
      * Builds the chain, initializes current and usermanager plugins.
      */
@@ -61,9 +61,13 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
                     $this->msg(-1, 'plugin_not_initialized', array(':plugin:' => $pluginName));
                     continue;
                 }
+                // add the plugin to the chain
                 $this->plugins[] = $plugin;
-                if ($plugin->cando('external'))
-                    $this->cando['external'] = true;
+                // set chain capabilities
+                foreach (array('external', 'getGroups') as $capability)
+                    if ($plugin->canDo($capability))
+                        $this->cando[$capability] = true;
+                // set usermanager plugin capabilities
                 if (!empty($usermanagerPlugin) && $pluginName == $usermanagerPlugin) {
                     $this->usermanagerPlugin = $plugin;
                     foreach($this->cando as $key => &$value)
@@ -186,9 +190,14 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
 
     /** @inheritdoc */
     public function retrieveGroups($start = 0, $limit = 0) {
-        if (!$this->canDoUsermanagerPlugin('getGroups'))
-            return array();
-        return $this->usermanagerPlugin->retrieveGroups($start,$limit);
+        $groups = array();
+        foreach ($this->plugins as $plugin) {
+            if ($plugin->canDo('getGroups'))
+                $groups = array_unique(array_merge($groups, $plugin->retrieveGroups()));
+            if (($start + $limit > 0) && count($groups) >= ($start + $limit))
+                break;
+        }
+        return array_slice($groups, $start, ($limit !== 0 ? $limit : NULL));
     }
 
     /** @inheritdoc */
