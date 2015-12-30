@@ -32,15 +32,12 @@ class auth_plugin_authchained extends DokuWiki_Auth_Plugin {
      * @var
      */
     protected $usermanagerPlugin;
-
-
+    
     /**
      * Builds the chain, initializes current and usermanager plugins.
      */
     public function __construct() {
         parent::__construct();
-
-        $this->msg(0, 'debug');
 
         // initialize auth plugin for the current user if set
         $currentPluginName = $this->getCurrentPluginName();
